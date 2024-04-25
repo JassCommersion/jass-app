@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">jass-app</string>
+    <string name="incorrect_email_message">Incorrect Email</string>
+    <string name="incorrect_password_message">Incorrect Password</string>
+    <string name="incorrect_password_repeat_message">Incorrect Password Repeat</string>
+    <string name="or">or</string>
+</resources>
