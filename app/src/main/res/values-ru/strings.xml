@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">jass-app</string>
+    <string name="incorrect_email_message">Неверная почта</string>
+    <string name="incorrect_password_message">Неверный пароль</string>
+    <string name="incorrect_password_repeat_message">Неверный повтор пароля</string>
+    <string name="or">или</string>
+    <string name="forget_password">Забыли пароль?</string>
+    <string name="confirmation_title_text">Введите код подтверждения</string>
+    <string name="continue_string">Продолжить</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="email">Почта</string>
+    <string name="password">Пароль</string>
+    <string name="repeat_password">Повторите пароль</string>
+    <string name="sign_up_google">Зарегистрируйтесь через Google</string>
+    <string name="incorrect_verification_code">Неверный код верификации</string>
+    <string name="repeat_password_title_text">Введите новый пароль</string>
+</resources>

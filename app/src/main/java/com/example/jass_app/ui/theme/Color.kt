@@ -16,6 +16,8 @@ val UnfocusedTextFieldColor = Color(0xFFB9B9B9)
 
 val DarkBlack = Color(0xFF080808)
 val LightGray = Color(0xFF5E5E5E)
+val DarkGrayOutline = Color(0xFFB9B9B9)
+val LightGrayOutline = Color(0xFFF4F4F4)
 
 val DarkBlue = Color(0xFF413DFF)
 val LightBlue = Color(0xFF10B5BF)

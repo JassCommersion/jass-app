@@ -1,104 +1,168 @@
-package com.example.jass_app.ui.component
+package com.appmason.jetplayground.ui.components
 
-import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.jass_app.ui.theme.FocusedTextFieldColor
-import com.example.jass_app.ui.theme.UnfocusedTextFieldColor
+import com.example.jass_app.ui.theme.DarkGrayOutline
+import com.example.jass_app.ui.theme.LightGrayOutline
+import kotlinx.coroutines.delay
+
+/**
+ * A composable function for creating an OTP input field.
+ *
+ * This OTP input field allows for the entry of a One Time Password (OTP) with a configurable number of characters.
+ * It supports automatic population of OTP from different sources (e.g., server).
+ *
+ * @param modifier Modifier for styling and layout of the input field.
+ * @param otpText The current text of the OTP input field.
+ * @param otpLength The length of the OTP. Default is 6 characters.
+ * @param shouldShowCursor Boolean flag to indicate if the cursor should be shown.
+ * @param shouldCursorBlink Boolean flag to indicate if the cursor should blink.
+ * @param onOtpModified Lambda function that is triggered when the OTP text changes.
+ *        It provides the updated text and a flag indicating if the OTP is complete.
+ * @throws IllegalArgumentException if the initial otpText length is greater than otpLength.
+ *
+ * Usage example:
+ * OtpInputField(
+ *     otpText = viewModel.otpText,
+ *     otpLength = 6,
+ *     onOtpTextChange = { otp, isComplete -> /* handle OTP change */ }
+ * )
+ */
 
 @Composable
-fun OtpTextField(
+fun OtpInputField(
     modifier: Modifier = Modifier,
-    textModifier: Modifier = Modifier,
     otpText: String,
-    otpCount: Int = 6,
-    onOtpTextChange: (String, Boolean) -> Unit,
+    otpLength: Int = 6,
+    shouldShowCursor: Boolean = false,
+    shouldCursorBlink: Boolean = false,
+    onOtpModified: (String, Boolean) -> Unit
 ) {
-
+    LaunchedEffect(Unit) {
+        if (otpText.length > otpLength) {
+            throw IllegalArgumentException("OTP should be $otpLength digits")
+        }
+    }
     BasicTextField(
         modifier = modifier,
-        singleLine = true,
         value = TextFieldValue(otpText, selection = TextRange(otpText.length)),
         onValueChange = {
-            if (it.text.length <= otpCount) {
-                onOtpTextChange.invoke(it.text, it.text.length == otpCount)
+            if (it.text.length <= otpLength) {
+                onOtpModified.invoke(it.text, it.text.length == otpLength)
             }
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.NumberPassword,
+            imeAction = ImeAction.Done
+        ),
         decorationBox = {
-            Row(horizontalArrangement = Arrangement.Center) {
-                repeat(otpCount) { index ->
-                    CharView(index, otpText, textModifier)
-                    Spacer(modifier = Modifier.width(8.dp))
+            Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                repeat(otpLength) { index ->
+                    CharacterContainer(
+                        index = index,
+                        text = otpText,
+                        shouldShowCursor = shouldShowCursor,
+                        shouldCursorBlink = shouldCursorBlink,
+                    )
                 }
             }
         }
     )
 }
 
+/**
+ * An internal composable function used within [OtpInputField] to render individual character containers.
+ *
+ * Each character container displays a single character of the OTP and manages cursor visibility and blinking.
+ *
+ * @param index The position of this character in the OTP.
+ * @param text The current text of the OTP input field.
+ * @param shouldShowCursor Boolean flag to indicate if the cursor should be shown for this container.
+ * @param shouldCursorBlink Boolean flag to indicate if the cursor should blink when shown.
+ *
+ * Note: This function cannot be used outside the context of [OtpInputField] as it is tailored to its specific use-case.
+ */
 @Composable
-private fun CharView(
+internal fun CharacterContainer(
     index: Int,
     text: String,
-    modifier: Modifier
+    shouldShowCursor: Boolean,
+    shouldCursorBlink: Boolean,
 ) {
     val isFocused = text.length == index
-    val char = when {
-        index == text.length -> "0"
-        index > text.length -> ""
-        else -> text[index].toString()
+    val character = when {
+        index < text.length -> text[index].toString()
+        else -> ""
     }
-    Text(
-        modifier = modifier,
-        text = char,
-        color = if (isFocused) {
-            FocusedTextFieldColor
-        } else {
-            UnfocusedTextFieldColor
-        },
-        textAlign = TextAlign.Center,
 
+    // Cursor visibility state
+    val cursorVisible = remember { mutableStateOf(shouldShowCursor) }
+
+    // Blinking effect for the cursor
+    LaunchedEffect(key1 = isFocused) {
+        if (isFocused && shouldShowCursor && shouldCursorBlink) {
+            while (true) {
+                delay(800) // Adjust the blinking speed here
+                cursorVisible.value = !cursorVisible.value
+            }
+        }
+    }
+
+    Box(contentAlignment = Alignment.Center) {
+        Text(
+            modifier = Modifier
+                .width(36.dp)
+                .border(
+                    width = when {
+                        isFocused -> 2.dp
+                        else -> 1.dp
+                    },
+                    color = when {
+                        isFocused -> DarkGrayOutline
+                        else -> LightGrayOutline
+                    },
+                    shape = RoundedCornerShape(6.dp)
+                )
+                .padding(2.dp),
+            text = character,
+            style = MaterialTheme.typography.headlineLarge,
+            color = if (isFocused) LightGrayOutline else DarkGrayOutline,
+            textAlign = TextAlign.Center
         )
-}
 
-@Composable
-@Preview
-fun OtpTextFieldPreview() {
-    var text by remember { mutableStateOf("") }
-
-    val mContext = LocalContext.current
-
-    OtpTextField(
-        otpText = text,
-        onOtpTextChange = { value, otpInputFilled ->
-            text = value
-            Toast.makeText(mContext, "Change", Toast.LENGTH_LONG).show()
-        },
-        textModifier = Modifier
-            .border(2.dp, Color.Black)
-            .padding(horizontal = 5.dp)
-            .width(20.dp)
-
-    )
+        // Display cursor when focused
+        AnimatedVisibility(visible = isFocused && cursorVisible.value) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .width(2.dp)
+                    .height(24.dp) // Adjust height according to your design
+                    .background(DarkGrayOutline)
+            )
+        }
+    }
 }
