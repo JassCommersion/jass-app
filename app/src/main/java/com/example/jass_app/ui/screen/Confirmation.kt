@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.appmason.jetplayground.ui.components.OtpInputField
 import com.example.jass_app.R
 import com.example.jass_app.ui.component.CustomButton
@@ -37,53 +39,60 @@ fun Confirmation() {
 
     val buttonModifier = Modifier
         .fillMaxWidth()
+        .padding(vertical = 10.dp)
     val buttonBorder = BorderStroke(2.dp, ButtonGradient)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(5.dp)
-    ) {
-        Column {
-            Image(
-                imageVector = ImageVector.vectorResource(R.drawable.confirm),
-                contentDescription = "Confirm label"
-            )
-            Spacer(modifier = Modifier.padding(3.dp))
-            Image(
-                imageVector = ImageVector.vectorResource(R.drawable.email),
-                contentDescription = "Confirm label"
-            )
-        }
-        Text(
-            text = stringResource(id = R.string.confirmation_title_text),
-            modifier = Modifier.padding(vertical = 10.dp)
-        )
-        OtpInputField(modifier = Modifier.fillMaxWidth(),
-            otpText = otpValue,
-            shouldCursorBlink = false,
-            onOtpModified = { value, otpFilled ->
-                otpValue = value
-                isOtpFilled = otpFilled
-            })
-
-        if (!isCorrect) {
+    Surface {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp, vertical = 20.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(vertical = 10.dp)
+            ) {
+                Image(
+                    imageVector = ImageVector.vectorResource(R.drawable.confirm),
+                    contentDescription = "Confirm label"
+                )
+                Spacer(modifier = Modifier.padding(3.dp))
+                Image(
+                    imageVector = ImageVector.vectorResource(R.drawable.email),
+                    contentDescription = "Confirm label"
+                )
+            }
             Text(
-                text = stringResource(id = R.string.incorrect_verification_code),
-                modifier = incorrectStatusModifier
+                text = stringResource(id = R.string.confirmation_title_text),
+                modifier = Modifier.padding(vertical = 10.dp),
+                fontSize = 19.sp
+            )
+            OtpInputField(
+                modifier = Modifier.fillMaxWidth(),
+                otpText = otpValue,
+                shouldCursorBlink = false,
+                onOtpModified = { value, otpFilled ->
+                    otpValue = value
+                    isOtpFilled = otpFilled
+                })
+
+            if (!isCorrect) {
+                Text(
+                    text = stringResource(id = R.string.incorrect_verification_code),
+                    modifier = incorrectStatusModifier
+                )
+            }
+
+            CustomButton(
+                text = {
+                    Text(stringResource(id = R.string.continue_string))
+                },
+                onClick = {
+                    isCorrect = !isCorrect
+//                TODO
+                },
+                modifier = buttonModifier,
+                border = buttonBorder
             )
         }
-
-        CustomButton(
-            text = {
-                Text(stringResource(id = R.string.continue_string))
-                   },
-            onClick = {
-                      isCorrect = !isCorrect
-//                TODO
-            },
-            modifier = buttonModifier,
-            border = buttonBorder
-        )
     }
 }

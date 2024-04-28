@@ -33,7 +33,7 @@ import com.example.jass_app.ui.component.CustomOutlinedTextField
 import com.example.jass_app.ui.theme.ButtonGradient
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
 @Composable
 fun Authorisation() {
 
@@ -52,6 +52,7 @@ fun Authorisation() {
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.padding(1.dp))
             Column(
                 modifier = Modifier.padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
