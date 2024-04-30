@@ -16,4 +16,6 @@
     <string name="sign_up_google">Зарегистрируйтесь через Google</string>
     <string name="incorrect_verification_code">Неверный код верификации</string>
     <string name="repeat_password_title_text">Введите новый пароль</string>
+    <string name="more_info">подробнее</string>
+    <string name="friends">Друзья</string>
 </resources>

@@ -70,4 +70,6 @@ dependencies {
 
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.foundation:foundation-layout")
+
+    implementation("me.onebone:toolbar-compose:2.3.5")
 }

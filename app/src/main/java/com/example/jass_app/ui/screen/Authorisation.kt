@@ -104,7 +104,8 @@ fun Authorisation() {
                                 isCorrectPassword = !isCorrectPassword
                             },
                             modifier = buttonModifier,
-                            border = buttonBorder
+                            border = buttonBorder,
+                            enable = false
                         )
                     }
                 }

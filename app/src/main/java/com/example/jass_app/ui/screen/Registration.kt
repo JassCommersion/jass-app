@@ -85,7 +85,8 @@ fun Registration() {
                             isCorrectEmail = !isCorrectEmail
                             isCorrectPassword = !isCorrectPassword
                             isCorrectPasswordRepeat = !isCorrectPasswordRepeat
-                        }, modifier = buttonModifier, border = buttonBorder
+                        }, modifier = buttonModifier, border = buttonBorder,
+                            enable = false
                         )
                     }
                     Column(modifier = Modifier.weight(0.05f)) {}

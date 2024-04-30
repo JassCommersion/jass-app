@@ -18,6 +18,7 @@ fun CustomButton(
     modifier: Modifier = Modifier,
     border: BorderStroke? = null,
     icon: Painter? = null,
+    enable: Boolean = true,
     colors: ButtonColors = ButtonDefaults.buttonColors()
 ) {
     Button(
@@ -25,6 +26,7 @@ fun CustomButton(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         border = border,
+        enabled = enable
     ) {
         if (icon != null) {
             Image(painter = icon, contentDescription = null)
