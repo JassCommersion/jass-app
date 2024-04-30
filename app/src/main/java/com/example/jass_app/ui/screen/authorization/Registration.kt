@@ -1,9 +1,7 @@
-package com.example.jass_app.ui.screen
+package com.example.jass_app.ui.screen.authorization
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,28 +27,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.jass_app.R
-import com.example.jass_app.data.viewmodel.LoginViewModel
 import com.example.jass_app.data.viewmodel.RegistrationViewModel
 import com.example.jass_app.ui.component.CustomButton
 import com.example.jass_app.ui.component.CustomOutlinedTextField
-import com.example.jass_app.ui.theme.BackgroundGray
 import com.example.jass_app.ui.theme.ButtonGradient
 import com.example.jass_app.util.PreferencesManager
 import org.koin.androidx.compose.getViewModel
 
 
 @Composable
-fun Authorisation(
+fun Registration(
     navHostController: NavHostController,
-    viewModel: LoginViewModel = getViewModel()
+    viewModel: RegistrationViewModel = getViewModel()
 ) {
 
     var isCorrectEmail by remember { mutableStateOf(true) }
     var isCorrectPassword by remember { mutableStateOf(true) }
+    var isCorrectPasswordRepeat by remember { mutableStateOf(true) }
 
     val mContext = LocalContext.current
     val preferencesManager = remember { PreferencesManager(mContext) }
@@ -64,13 +59,11 @@ fun Authorisation(
         .fillMaxWidth()
     val buttonBorder = BorderStroke(2.dp, ButtonGradient)
 
-    Surface(
-        modifier = Modifier.background(BackgroundGray)
-    ) {
+    Surface {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 10.dp),
+                .padding(horizontal = 5.dp),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -81,27 +74,22 @@ fun Authorisation(
             ) {
                 Image(
                     imageVector = ImageVector.vectorResource(R.drawable.jass_logo_black),
-                    contentDescription = "Jass logo",
-                    modifier = Modifier
-                        .padding(vertical = 20.dp)
+                    contentDescription = "Jass logo"
                 )
                 Spacer(modifier = Modifier.padding(5.dp))
 
-                AuthorisationTextFieldBlock(
-                    isCorrectEmail, isCorrectPassword, viewModel
+                RegistrationTextFieldBlock(
+                    isCorrectEmail, isCorrectPassword, isCorrectPasswordRepeat, viewModel
                 )
 
                 CustomButton(
-                    text = {
-                        Text(
-                            stringResource(id = R.string.continue_string),
-                            color = Color.White
-                        )
-                    },
+                    text = { Text("Continue", color = Color.White) },
                     onClick = {
-                        if (viewModel.passwordValue.value != "" || viewModel.emailValue.value != "") {
-                            viewModel.login()
-                            if (viewModel.loginStatus.value!!) {
+                        if (viewModel.passwordValue.value == viewModel.passwordRepeatValue.value
+                            && (viewModel.passwordValue.value != "" || viewModel.emailValue.value != "")
+                        ) {
+                            viewModel.register()
+                            if (viewModel.registrationStatus.value!!) {
                                 preferencesManager.saveData(
                                     "accessToken",
                                     viewModel.accessToken.value!!
@@ -110,13 +98,12 @@ fun Authorisation(
                                     "refreshToken",
                                     viewModel.refreshToken.value!!
                                 )
-
-                                navHostController.navigate("Profile")
                             }
+
+                        } else {
+                            isCorrectPasswordRepeat = false
                         }
-                    },
-                    modifier = buttonModifier,
-                    border = buttonBorder
+                    }, modifier = buttonModifier, border = buttonBorder
                 )
 
                 Row(
@@ -127,17 +114,11 @@ fun Authorisation(
                         modifier = Modifier.weight(1f)
                     ) {
                         CustomButton(
-                            text = {
-                                Text(
-                                    stringResource(id = R.string.sign_up),
-                                    color = Color.White
-                                )
-                            },
-                            onClick = {
-                                navHostController.navigate("Registration")
-                            },
+                            text = { Text(stringResource(id = R.string.sign_up), color = Color.White) },
+                            onClick = {},
                             modifier = buttonModifier,
-                            border = buttonBorder
+                            border = buttonBorder,
+                            enable = false
                         )
                     }
                     Column(modifier = Modifier.weight(0.05f)) {}
@@ -145,30 +126,13 @@ fun Authorisation(
                         modifier = Modifier.weight(1f)
                     ) {
                         CustomButton(
-                            text = {
-                                Text(
-                                    stringResource(id = R.string.sign_in),
-                                    color = Color.White
-                                )
-                            },
+                            text = { Text(stringResource(id = R.string.sign_in), color = Color.White) },
                             onClick = {
-                                isCorrectEmail = !isCorrectEmail
-                                isCorrectPassword = !isCorrectPassword
-                            },
-                            modifier = buttonModifier,
-                            border = buttonBorder,
-                            enable = false
+                                navHostController.navigate("Authorization")
+                            }, modifier = buttonModifier, border = buttonBorder
                         )
                     }
                 }
-                Text(
-                    text = stringResource(id = R.string.forget_password),
-                    modifier = Modifier
-                        .padding(vertical = 10.dp)
-                        .clickable {
-                            /* TODO */
-                        }
-                )
             }
 
             Column(
@@ -203,7 +167,7 @@ fun Authorisation(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = stringResource(id = R.string.sign_up_google),
+                                text = "Sign Up with Google",
                                 modifier = Modifier.padding(horizontal = 5.dp), color = Color.White
                             )
                         }
@@ -216,12 +180,14 @@ fun Authorisation(
             }
         }
     }
-
 }
 
 @Composable
-fun AuthorisationTextFieldBlock(
-    isCorrectEmail: Boolean, isCorrectPassword: Boolean, viewModel: LoginViewModel
+fun RegistrationTextFieldBlock(
+    isCorrectEmail: Boolean,
+    isCorrectPassword: Boolean,
+    isCorrectPasswordRepeat: Boolean,
+    viewModel: RegistrationViewModel
 ) {
 
     val textFieldModifier = Modifier
@@ -249,13 +215,19 @@ fun AuthorisationTextFieldBlock(
             viewModel.passwordValue.value = newValue
         }
     )
+    CustomOutlinedTextField(
+        hintText = stringResource(id = R.string.repeat_password),
+        keyboardType = KeyboardType.Password,
+        isPasswordToggleEnabled = true,
+        supportingText = stringResource(R.string.incorrect_password_repeat_message),
+        modifier = textFieldModifier,
+        isError = !isCorrectPasswordRepeat,
+        onChange = { newValue ->
+            viewModel.passwordRepeatValue.value = newValue
+        }
+    )
 }
 
-//@Preview
-//@Composable
-//fun AuthPreview() {
-//
-//}
 
 /*
 TODO - Add styles on buttons and field.

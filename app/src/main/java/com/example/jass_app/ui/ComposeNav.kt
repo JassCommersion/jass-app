@@ -7,9 +7,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.jass_app.data.viewmodel.LoginViewModel
 import com.example.jass_app.data.viewmodel.RegistrationViewModel
 import com.example.jass_app.data.viewmodel.ProfileViewModel
-import com.example.jass_app.ui.screen.Authorisation
-import com.example.jass_app.ui.screen.Registration
-import com.example.jass_app.ui.screen.UserProfile
+import com.example.jass_app.ui.screen.authorization.Authorisation
+import com.example.jass_app.ui.screen.authorization.Registration
+import com.example.jass_app.ui.screen.profile.UserProfile
 
 @Composable
 fun ComposeNav(registrationViewModel: RegistrationViewModel, authorizationViewModel: LoginViewModel, profileViewModel: ProfileViewModel) {

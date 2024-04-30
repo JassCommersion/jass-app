@@ -12,7 +12,6 @@ import com.example.jass_app.data.viewmodel.ProfileViewModel
 import com.example.jass_app.data.viewmodel.RegistrationViewModel
 import com.example.jass_app.di.appModule
 import com.example.jass_app.ui.ComposeNav
-import com.example.jass_app.ui.screen.Registration
 import com.example.jass_app.ui.theme.JassappTheme
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger

@@ -1,7 +1,9 @@
-package com.example.jass_app.ui.screen
+package com.example.jass_app.ui.screen.authorization
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,23 +32,23 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.jass_app.R
-import com.example.jass_app.data.viewmodel.RegistrationViewModel
+import com.example.jass_app.data.viewmodel.LoginViewModel
 import com.example.jass_app.ui.component.CustomButton
 import com.example.jass_app.ui.component.CustomOutlinedTextField
+import com.example.jass_app.ui.theme.BackgroundGray
 import com.example.jass_app.ui.theme.ButtonGradient
 import com.example.jass_app.util.PreferencesManager
 import org.koin.androidx.compose.getViewModel
 
 
 @Composable
-fun Registration(
+fun Authorisation(
     navHostController: NavHostController,
-    viewModel: RegistrationViewModel = getViewModel()
+    viewModel: LoginViewModel = getViewModel()
 ) {
 
     var isCorrectEmail by remember { mutableStateOf(true) }
     var isCorrectPassword by remember { mutableStateOf(true) }
-    var isCorrectPasswordRepeat by remember { mutableStateOf(true) }
 
     val mContext = LocalContext.current
     val preferencesManager = remember { PreferencesManager(mContext) }
@@ -59,11 +61,13 @@ fun Registration(
         .fillMaxWidth()
     val buttonBorder = BorderStroke(2.dp, ButtonGradient)
 
-    Surface {
+    Surface(
+        modifier = Modifier.background(BackgroundGray)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 5.dp),
+                .padding(horizontal = 10.dp),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -74,22 +78,27 @@ fun Registration(
             ) {
                 Image(
                     imageVector = ImageVector.vectorResource(R.drawable.jass_logo_black),
-                    contentDescription = "Jass logo"
+                    contentDescription = "Jass logo",
+                    modifier = Modifier
+                        .padding(vertical = 20.dp)
                 )
                 Spacer(modifier = Modifier.padding(5.dp))
 
-                RegistrationTextFieldBlock(
-                    isCorrectEmail, isCorrectPassword, isCorrectPasswordRepeat, viewModel
+                AuthorisationTextFieldBlock(
+                    isCorrectEmail, isCorrectPassword, viewModel
                 )
 
                 CustomButton(
-                    text = { Text("Continue", color = Color.White) },
+                    text = {
+                        Text(
+                            stringResource(id = R.string.continue_string),
+                            color = Color.White
+                        )
+                    },
                     onClick = {
-                        if (viewModel.passwordValue.value == viewModel.passwordRepeatValue.value
-                            && (viewModel.passwordValue.value != "" || viewModel.emailValue.value != "")
-                        ) {
-                            viewModel.register()
-                            if (viewModel.registrationStatus.value!!) {
+                        if (viewModel.passwordValue.value != "" || viewModel.emailValue.value != "") {
+                            viewModel.login()
+                            if (viewModel.loginStatus.value!!) {
                                 preferencesManager.saveData(
                                     "accessToken",
                                     viewModel.accessToken.value!!
@@ -98,12 +107,13 @@ fun Registration(
                                     "refreshToken",
                                     viewModel.refreshToken.value!!
                                 )
-                            }
 
-                        } else {
-                            isCorrectPasswordRepeat = false
+                                navHostController.navigate("Profile")
+                            }
                         }
-                    }, modifier = buttonModifier, border = buttonBorder
+                    },
+                    modifier = buttonModifier,
+                    border = buttonBorder
                 )
 
                 Row(
@@ -114,11 +124,17 @@ fun Registration(
                         modifier = Modifier.weight(1f)
                     ) {
                         CustomButton(
-                            text = { Text(stringResource(id = R.string.sign_up), color = Color.White) },
-                            onClick = {},
+                            text = {
+                                Text(
+                                    stringResource(id = R.string.sign_up),
+                                    color = Color.White
+                                )
+                            },
+                            onClick = {
+                                navHostController.navigate("Registration")
+                            },
                             modifier = buttonModifier,
-                            border = buttonBorder,
-                            enable = false
+                            border = buttonBorder
                         )
                     }
                     Column(modifier = Modifier.weight(0.05f)) {}
@@ -126,13 +142,30 @@ fun Registration(
                         modifier = Modifier.weight(1f)
                     ) {
                         CustomButton(
-                            text = { Text(stringResource(id = R.string.sign_in), color = Color.White) },
+                            text = {
+                                Text(
+                                    stringResource(id = R.string.sign_in),
+                                    color = Color.White
+                                )
+                            },
                             onClick = {
-                                navHostController.navigate("Authorization")
-                            }, modifier = buttonModifier, border = buttonBorder
+                                isCorrectEmail = !isCorrectEmail
+                                isCorrectPassword = !isCorrectPassword
+                            },
+                            modifier = buttonModifier,
+                            border = buttonBorder,
+                            enable = false
                         )
                     }
                 }
+                Text(
+                    text = stringResource(id = R.string.forget_password),
+                    modifier = Modifier
+                        .padding(vertical = 10.dp)
+                        .clickable {
+                            /* TODO */
+                        }
+                )
             }
 
             Column(
@@ -167,7 +200,7 @@ fun Registration(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "Sign Up with Google",
+                                text = stringResource(id = R.string.sign_up_google),
                                 modifier = Modifier.padding(horizontal = 5.dp), color = Color.White
                             )
                         }
@@ -180,14 +213,12 @@ fun Registration(
             }
         }
     }
+
 }
 
 @Composable
-fun RegistrationTextFieldBlock(
-    isCorrectEmail: Boolean,
-    isCorrectPassword: Boolean,
-    isCorrectPasswordRepeat: Boolean,
-    viewModel: RegistrationViewModel
+fun AuthorisationTextFieldBlock(
+    isCorrectEmail: Boolean, isCorrectPassword: Boolean, viewModel: LoginViewModel
 ) {
 
     val textFieldModifier = Modifier
@@ -213,17 +244,6 @@ fun RegistrationTextFieldBlock(
         modifier = textFieldModifier,
         onChange = { newValue ->
             viewModel.passwordValue.value = newValue
-        }
-    )
-    CustomOutlinedTextField(
-        hintText = stringResource(id = R.string.repeat_password),
-        keyboardType = KeyboardType.Password,
-        isPasswordToggleEnabled = true,
-        supportingText = stringResource(R.string.incorrect_password_repeat_message),
-        modifier = textFieldModifier,
-        isError = !isCorrectPasswordRepeat,
-        onChange = { newValue ->
-            viewModel.passwordRepeatValue.value = newValue
         }
     )
 }

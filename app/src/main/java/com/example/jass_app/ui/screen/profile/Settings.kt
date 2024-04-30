@@ -1,4 +1,4 @@
-package com.example.jass_app.ui.screen
+package com.example.jass_app.ui.screen.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

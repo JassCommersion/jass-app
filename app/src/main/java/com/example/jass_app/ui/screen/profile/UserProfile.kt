@@ -1,4 +1,4 @@
-package com.example.jass_app.ui.screen
+package com.example.jass_app.ui.screen.profile
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -60,10 +60,10 @@ import com.example.jass_app.R
 import com.example.jass_app.ui.component.CustomButton
 import com.example.jass_app.data.model.Post
 import com.example.jass_app.data.viewmodel.ProfileViewModel
+import com.example.jass_app.ui.screen.PostDialog
 import com.example.jass_app.ui.theme.BackgroundGray
 import com.example.jass_app.ui.theme.ButtonGradient
 import com.example.jass_app.util.PreferencesManager
-import kotlinx.coroutines.runBlocking
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
