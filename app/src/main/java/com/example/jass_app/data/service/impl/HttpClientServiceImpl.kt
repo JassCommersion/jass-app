@@ -9,6 +9,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.cookie
 import io.ktor.client.request.get
+import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -68,21 +69,21 @@ class HttpClientServiceImpl(
 
 //    Profile
 
-    override suspend fun getUserProfile(accessToken: String): HttpResponse =
+    override suspend fun getUserProfile(accessToken: String): HttpResponse = // MutableList<ShortProfileResponse>
         client.get("$BASE_URL_PROFILE/get/my_profile") {
             url {
                 bearerAuth(accessToken)
             }
         }
 
-    override suspend fun getAllProfiles(accessToken: String): HttpResponse =
+    override suspend fun getAllProfiles(accessToken: String): HttpResponse = // MutableList<ShortProfileResponse>
         client.get("$BASE_URL_PROFILE/get/all_profiles") {
             url {
                 bearerAuth(accessToken)
             }
         }
 
-    override suspend fun getProfilesByIds(accessToken: String, ids: List<String>): HttpResponse =
+    override suspend fun getProfilesByIds(accessToken: String, ids: List<String>): HttpResponse = // MutableList<ShortProfileResponse>
         client.get("$BASE_URL_PROFILE/get/profiles_by_ids"){
             url {
                 bearerAuth(accessToken)
@@ -92,11 +93,49 @@ class HttpClientServiceImpl(
             }
         }
 
-    override suspend fun getProfileById(accessToken: String, id: String): HttpResponse =
+    override suspend fun getProfileById(accessToken: String, id: String): HttpResponse = // FullProfileResponse
         client.get("$BASE_URL_PROFILE/get/profile_by_id"){
             url {
                 bearerAuth(accessToken)
                 parameters.append("id", id)
+            }
+        }
+//    Profile.Change
+
+    override suspend fun changeLoginAndPersonalInfo(
+        accessToken: String,
+        userName: String?,
+        firstName: String?,
+        lastName: String?,
+        gender_name: String?,
+        birth_date: String?,
+        residenceCountry: String?
+    ): HttpResponse =
+        client.patch("$BASE_URL_PROFILE/change/change_personal_info") {
+            url {
+                bearerAuth(accessToken)
+                if (userName != null)parameters.append("userName", userName)
+                if (firstName != null)parameters.append("firstName", firstName)
+                if (lastName != null)parameters.append("lastName", lastName)
+                if (gender_name != null)parameters.append("gender_name", gender_name)
+                if (birth_date != null)parameters.append("birth_date", birth_date)
+                if (residenceCountry != null)parameters.append("residenceCountry", residenceCountry)
+            }
+
+        }
+
+    override suspend fun changeProfileSettings(
+        accessToken: String,
+        profileVisibility: String?,
+        language: String?,
+        colorTheme: String?
+    ): HttpResponse =
+        client.patch("$BASE_URL_PROFILE/change/change_profile_settings") {
+            url {
+                bearerAuth(accessToken)
+                if (profileVisibility != null) parameters.append("profileVisibility", profileVisibility)
+                if (language != null) parameters.append("language", language)
+                if (colorTheme != null) parameters.append("colorTheme", colorTheme)
             }
         }
 
