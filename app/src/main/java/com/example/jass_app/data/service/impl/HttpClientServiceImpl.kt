@@ -7,15 +7,19 @@ import com.example.jass_app.data.service.HttpClientService
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.cookie
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
+import io.ktor.http.Cookie
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.util.date.GMTDate
 import io.ktor.util.reflect.TypeInfo
 import kotlinx.serialization.json.Json
+import java.time.Month
 
 class HttpClientServiceImpl(
     private val client: HttpClient
@@ -40,12 +44,27 @@ class HttpClientServiceImpl(
         }
 
     override suspend fun confirmRegister(email: String, token: String): HttpResponse =
-        client.post("$BASE_URL_AUTH/confirm") {
+        client.post("$BASE_URL_AUTH/registration/confirm") {
             url {
                 parameters.append("email", email)
                 parameters.append("token", token)
             }
         }
+
+    override suspend fun refreshAuth(refreshToken: String): HttpResponse =
+        client.post("$BASE_URL_AUTH/confirm/refresh") {
+            cookie(name = "refreshToken", value = refreshToken, expires = GMTDate(
+                seconds = 0,
+                minutes = 0,
+                hours = 10,
+                dayOfMonth = 3,
+                month = io.ktor.util.date.Month.MAY,
+                year = 2024
+            )
+            )
+        }
+
+//    TODO: UserRecovery + PasswordChange
 
 //    Profile
 
