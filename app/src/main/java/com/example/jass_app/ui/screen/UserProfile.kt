@@ -2,6 +2,7 @@ package com.example.jass_app.ui.screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,34 +28,42 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.jass_app.R
 import com.example.jass_app.ui.component.CustomButton
 import com.example.jass_app.data.model.Post
 import com.example.jass_app.data.viewmodel.ProfileViewModel
+import com.example.jass_app.ui.theme.BackgroundGray
 import com.example.jass_app.ui.theme.ButtonGradient
+import com.example.jass_app.util.PreferencesManager
+import kotlinx.coroutines.runBlocking
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
@@ -61,45 +71,75 @@ import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 
 @Composable
 fun UserProfile(
-    profileViewModel: ProfileViewModel
+    navController: NavHostController,
+    viewModel: ProfileViewModel
 ) {
     val buttonModifier = Modifier
         .fillMaxWidth()
     val buttonBorder = BorderStroke(2.dp, ButtonGradient)
 
-    CollapsingToolbarScaffold(modifier = Modifier
-        .fillMaxWidth()
-        .padding(start = 15.dp, end = 15.dp),
-        state = rememberCollapsingToolbarScaffoldState(),
-        scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed,
-        toolbar = {
-            Column(
-                modifier = Modifier.pin()
-            ) {
-                ProfileHeader("really_long_long_long_long_long_username", 1)
-                Divider(modifier = Modifier.padding(vertical = 10.dp, horizontal = 15.dp))
-            }
-        }) {
-        Column(
-            Modifier.fillMaxHeight()
+    val profileStatus by viewModel.profileStatus.observeAsState()
+    val profile by viewModel.profile.observeAsState()
+
+    val preferencesManager = PreferencesManager(LocalContext.current)
+
+    LaunchedEffect(Unit) {
+        viewModel.getProfile(preferencesManager.getData("accessToken", ""))
+    }
+
+    if (profileStatus == true) {
+        Surface(
+            modifier = Modifier.background(BackgroundGray)
         ) {
-            Column(
-                Modifier.verticalScroll(rememberScrollState())
-            ) {
-            AvatarBlock(avatarId = 1, userFullName = "Vin Diesel")
-                Divider(modifier = Modifier.padding(top = 20.dp, bottom = 10.dp))
-                FriendsBlock(listOf("Andrew Tate", "Barack Obama", "Eshgin Magerramov", "Joe Biden", "Vladimir Putin"))
-                Divider(modifier = Modifier.padding(top = 5.dp, bottom = 10.dp))
-                CustomButton(
-                    text = { Text(stringResource(id = R.string.add_post)) },
-                    onClick = {
-                        posts.add(getNewPost())
-                }, modifier = buttonModifier, border = buttonBorder
-                )
+            CollapsingToolbarScaffold(modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 15.dp, end = 15.dp),
+                state = rememberCollapsingToolbarScaffoldState(),
+                scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed,
+                toolbar = {
+                    Column(
+                        modifier = Modifier.pin()
+                    ) {
+                        profile?.userName?.let { ProfileHeader(it, 1) }
+                        HorizontalDivider(
+                            modifier = Modifier.padding(
+                                vertical = 10.dp,
+                                horizontal = 15.dp
+                            )
+                        )
+                    }
+                }) {
+                Column(
+                    Modifier.fillMaxHeight()
+                ) {
+                    Column(
+                        Modifier.verticalScroll(rememberScrollState())
+                    ) {
+                        AvatarBlock(avatarId = 1, userFullName = "Vin Diesel")
+                        HorizontalDivider(modifier = Modifier.padding(top = 20.dp, bottom = 10.dp))
+                        profile?.friendsIds?.let { FriendsBlock(friendsList = it.map { toString() }) }
+                        HorizontalDivider(modifier = Modifier.padding(top = 5.dp, bottom = 10.dp))
+                        CustomButton(
+                            text = { Text(stringResource(id = R.string.add_post), color = Color.White) },
+                            onClick = {
+//                            profile?.images.add(getNewPost())
+                            }, modifier = buttonModifier, border = buttonBorder
+                        )
+                    }
+                    PhotoGrid(
+//                    posts
+                    )
+                }
             }
-            PhotoGrid(
-                posts
-            )
+        }
+    } else {
+
+        Column(
+            modifier = Modifier.fillMaxSize().background(BackgroundGray),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(text = stringResource(id = R.string.loading))
         }
     }
 }
@@ -198,11 +238,11 @@ fun FriendCard(name: String, photo: ImageBitmap) {
     }
 }
 
-@Composable
-@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
-fun UserProfilePreview() {
-    UserProfile(MyProfileData = Any())
-}
+//@Composable
+//@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
+//fun UserProfilePreview() {
+//    UserProfile()
+//}
 
 @Composable
 fun AvatarBlock(avatarId: Int, userFullName: String) {

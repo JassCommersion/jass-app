@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.jass_app.data.viewmodel.LoginViewModel
+import com.example.jass_app.data.viewmodel.ProfileViewModel
 import com.example.jass_app.data.viewmodel.RegistrationViewModel
 import com.example.jass_app.di.appModule
 import com.example.jass_app.ui.ComposeNav
@@ -24,12 +25,12 @@ class MainActivity : ComponentActivity() {
         initDI()
         val RegistrationViewModel = getViewModel<RegistrationViewModel>()
         val AuthtorizationViewModel = getViewModel<LoginViewModel>()
+        val ProfileViewModel = getViewModel<ProfileViewModel>()
 
         setContent {
             JassappTheme {
                 // A surface container using the 'background' color from the theme
-                Greeting(name = "Hello, Android")
-                    ComposeNav(RegistrationViewModel, AuthtorizationViewModel)
+                ComposeNav(RegistrationViewModel, AuthtorizationViewModel, ProfileViewModel)
             }
         }
     }

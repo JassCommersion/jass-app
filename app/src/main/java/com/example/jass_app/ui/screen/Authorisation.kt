@@ -2,6 +2,7 @@ package com.example.jass_app.ui.screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,12 +17,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -34,21 +38,35 @@ import com.example.jass_app.data.viewmodel.LoginViewModel
 import com.example.jass_app.data.viewmodel.RegistrationViewModel
 import com.example.jass_app.ui.component.CustomButton
 import com.example.jass_app.ui.component.CustomOutlinedTextField
+import com.example.jass_app.ui.theme.BackgroundGray
 import com.example.jass_app.ui.theme.ButtonGradient
+import com.example.jass_app.util.PreferencesManager
 import org.koin.androidx.compose.getViewModel
 
 
 @Composable
-fun Authorisation(navHostController: NavHostController, viewModel: LoginViewModel = getViewModel()) {
+fun Authorisation(
+    navHostController: NavHostController,
+    viewModel: LoginViewModel = getViewModel()
+) {
 
     var isCorrectEmail by remember { mutableStateOf(true) }
     var isCorrectPassword by remember { mutableStateOf(true) }
+
+    val mContext = LocalContext.current
+    val preferencesManager = remember { PreferencesManager(mContext) }
+
+    val connectionStatus by viewModel.connectionStatus.observeAsState()
+    val accessToke by remember { mutableStateOf(preferencesManager.getData("accessToken", "")) }
+    val refreshToke by remember { mutableStateOf(preferencesManager.getData("refreshToken", "")) }
 
     val buttonModifier = Modifier
         .fillMaxWidth()
     val buttonBorder = BorderStroke(2.dp, ButtonGradient)
 
-    Surface {
+    Surface(
+        modifier = Modifier.background(BackgroundGray)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -74,12 +92,26 @@ fun Authorisation(navHostController: NavHostController, viewModel: LoginViewMode
                 )
 
                 CustomButton(
-                    text = { Text(stringResource(id = R.string.continue_string)) },
+                    text = {
+                        Text(
+                            stringResource(id = R.string.continue_string),
+                            color = Color.White
+                        )
+                    },
                     onClick = {
                         if (viewModel.passwordValue.value != "" || viewModel.emailValue.value != "") {
                             viewModel.login()
                             if (viewModel.loginStatus.value!!) {
-                                navHostController.navigate("Profile", viewModel)
+                                preferencesManager.saveData(
+                                    "accessToken",
+                                    viewModel.accessToken.value!!
+                                )
+                                preferencesManager.saveData(
+                                    "refreshToken",
+                                    viewModel.refreshToken.value!!
+                                )
+
+                                navHostController.navigate("Profile")
                             }
                         }
                     },
@@ -95,7 +127,12 @@ fun Authorisation(navHostController: NavHostController, viewModel: LoginViewMode
                         modifier = Modifier.weight(1f)
                     ) {
                         CustomButton(
-                            text = { Text(stringResource(id = R.string.sign_up)) },
+                            text = {
+                                Text(
+                                    stringResource(id = R.string.sign_up),
+                                    color = Color.White
+                                )
+                            },
                             onClick = {
                                 navHostController.navigate("Registration")
                             },
@@ -108,7 +145,12 @@ fun Authorisation(navHostController: NavHostController, viewModel: LoginViewMode
                         modifier = Modifier.weight(1f)
                     ) {
                         CustomButton(
-                            text = { Text(stringResource(id = R.string.sign_in)) },
+                            text = {
+                                Text(
+                                    stringResource(id = R.string.sign_in),
+                                    color = Color.White
+                                )
+                            },
                             onClick = {
                                 isCorrectEmail = !isCorrectEmail
                                 isCorrectPassword = !isCorrectPassword
@@ -162,13 +204,14 @@ fun Authorisation(navHostController: NavHostController, viewModel: LoginViewMode
                         ) {
                             Text(
                                 text = stringResource(id = R.string.sign_up_google),
-                                modifier = Modifier.padding(horizontal = 5.dp)
+                                modifier = Modifier.padding(horizontal = 5.dp), color = Color.White
                             )
                         }
                     },
                     onClick = { /*TODO*/ },
                     icon = painterResource(R.drawable.google_logo),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    border = buttonBorder
                 )
             }
         }
@@ -207,6 +250,12 @@ fun AuthorisationTextFieldBlock(
         }
     )
 }
+
+//@Preview
+//@Composable
+//fun AuthPreview() {
+//
+//}
 
 /*
 TODO - Add styles on buttons and field.

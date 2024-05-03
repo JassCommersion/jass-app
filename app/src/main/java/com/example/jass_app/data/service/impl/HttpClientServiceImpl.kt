@@ -9,6 +9,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.cookie
 import io.ktor.client.request.get
+import io.ktor.client.request.headers
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -73,6 +74,7 @@ class HttpClientServiceImpl(
         client.get("$BASE_URL_PROFILE/get/my_profile") {
             url {
                 bearerAuth(accessToken)
+                Log.d("PROFILE_BODY", headers.entries().toString())
             }
         }
 
@@ -140,7 +142,7 @@ class HttpClientServiceImpl(
         }
 
     companion object {
-        private const val BASE_URL = "http://10.0.2.2:8080/api/v1"
+        private const val BASE_URL = "http://10.0.2.2:8000/api/v1"
         private const val BASE_URL_AUTH = "$BASE_URL/auth"
         private const val BASE_URL_PROFILE = "$BASE_URL/profile"
     }

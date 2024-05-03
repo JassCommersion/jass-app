@@ -2,6 +2,7 @@ package com.example.jass_app.ui.screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.example.jass_app.R
 import com.example.jass_app.ui.component.CustomButton
 import com.example.jass_app.ui.component.CustomOutlinedTextField
+import com.example.jass_app.ui.theme.BackgroundGray
 import com.example.jass_app.ui.theme.ButtonGradient
 
 @Preview(showBackground = true)
@@ -42,7 +44,9 @@ fun ResetPassword() {
     val textFieldModifier = Modifier
         .fillMaxWidth()
 
-    Surface {
+    Surface(
+        modifier = Modifier.fillMaxSize().background(BackgroundGray)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()

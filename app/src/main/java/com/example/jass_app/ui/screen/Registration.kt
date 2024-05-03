@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -33,19 +34,26 @@ import com.example.jass_app.data.viewmodel.RegistrationViewModel
 import com.example.jass_app.ui.component.CustomButton
 import com.example.jass_app.ui.component.CustomOutlinedTextField
 import com.example.jass_app.ui.theme.ButtonGradient
+import com.example.jass_app.util.PreferencesManager
 import org.koin.androidx.compose.getViewModel
 
 
 @Composable
-fun Registration(navHostController: NavHostController, viewModel: RegistrationViewModel = getViewModel()) {
+fun Registration(
+    navHostController: NavHostController,
+    viewModel: RegistrationViewModel = getViewModel()
+) {
 
     var isCorrectEmail by remember { mutableStateOf(true) }
     var isCorrectPassword by remember { mutableStateOf(true) }
     var isCorrectPasswordRepeat by remember { mutableStateOf(true) }
 
     val mContext = LocalContext.current
+    val preferencesManager = remember { PreferencesManager(mContext) }
 
     val connectionStatus by viewModel.connectionStatus.observeAsState()
+    val accessToke by remember { mutableStateOf(preferencesManager.getData("accessToken", "")) }
+    val refreshToke by remember { mutableStateOf(preferencesManager.getData("refreshToken", "")) }
 
     val buttonModifier = Modifier
         .fillMaxWidth()
@@ -75,15 +83,23 @@ fun Registration(navHostController: NavHostController, viewModel: RegistrationVi
                 )
 
                 CustomButton(
-                    text = { Text("Continue") },
+                    text = { Text("Continue", color = Color.White) },
                     onClick = {
-//                        Toast.makeText(mContext, viewModel.emailValue.value, Toast.LENGTH_LONG).show()
-//                        Toast.makeText(mContext, viewModel.passwordValue.value, Toast.LENGTH_LONG).show()
-//                        Toast.makeText(mContext, viewModel.passwordRepeatValue.value, Toast.LENGTH_LONG).show()
                         if (viewModel.passwordValue.value == viewModel.passwordRepeatValue.value
                             && (viewModel.passwordValue.value != "" || viewModel.emailValue.value != "")
                         ) {
                             viewModel.register()
+                            if (viewModel.registrationStatus.value!!) {
+                                preferencesManager.saveData(
+                                    "accessToken",
+                                    viewModel.accessToken.value!!
+                                )
+                                preferencesManager.saveData(
+                                    "refreshToken",
+                                    viewModel.refreshToken.value!!
+                                )
+                            }
+
                         } else {
                             isCorrectPasswordRepeat = false
                         }
@@ -97,11 +113,11 @@ fun Registration(navHostController: NavHostController, viewModel: RegistrationVi
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
-                        CustomButton(text = { Text("Sign Up") }, onClick = {
-                            isCorrectEmail = !isCorrectEmail
-                            isCorrectPassword = !isCorrectPassword
-                            isCorrectPasswordRepeat = !isCorrectPasswordRepeat
-                        }, modifier = buttonModifier, border = buttonBorder,
+                        CustomButton(
+                            text = { Text(stringResource(id = R.string.sign_up), color = Color.White) },
+                            onClick = {},
+                            modifier = buttonModifier,
+                            border = buttonBorder,
                             enable = false
                         )
                     }
@@ -110,9 +126,9 @@ fun Registration(navHostController: NavHostController, viewModel: RegistrationVi
                         modifier = Modifier.weight(1f)
                     ) {
                         CustomButton(
-                            text = { Text("Sign In") },
+                            text = { Text(stringResource(id = R.string.sign_in), color = Color.White) },
                             onClick = {
-                                      navHostController.navigate("Authorization")
+                                navHostController.navigate("Authorization")
                             }, modifier = buttonModifier, border = buttonBorder
                         )
                     }
@@ -152,13 +168,14 @@ fun Registration(navHostController: NavHostController, viewModel: RegistrationVi
                         ) {
                             Text(
                                 text = "Sign Up with Google",
-                                modifier = Modifier.padding(horizontal = 5.dp)
+                                modifier = Modifier.padding(horizontal = 5.dp), color = Color.White
                             )
                         }
                     },
                     onClick = { /*TODO*/ },
                     icon = painterResource(R.drawable.google_logo),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    border = buttonBorder
                 )
             }
         }

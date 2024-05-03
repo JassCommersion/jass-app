@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-private val httpClientService: HttpClientService
+    private val httpClientService: HttpClientService
 ) : ViewModel() {
 
     private val _connectionStatus = MutableLiveData<HttpStatusCode>()
@@ -46,8 +46,8 @@ private val httpClientService: HttpClientService
             when (responseLogin.status) {
                 HttpStatusCode.OK -> {
                     _loginStatus.postValue(true)
-                    _accessToken.value = responseLogin.body<LoginResponse>().accessToken
-                    _refreshToken.value = responseLogin.body<LoginResponse>().refreshToken
+                    _accessToken.postValue(responseLogin.body<LoginResponse>().accessToken)
+                    _refreshToken.postValue(responseLogin.body<LoginResponse>().refreshToken)
                 }
             }
         }

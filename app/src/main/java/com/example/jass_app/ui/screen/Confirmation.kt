@@ -2,6 +2,7 @@ package com.example.jass_app.ui.screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.appmason.jetplayground.ui.components.OtpInputField
 import com.example.jass_app.R
 import com.example.jass_app.ui.component.CustomButton
+import com.example.jass_app.ui.theme.BackgroundGray
 import com.example.jass_app.ui.theme.ButtonGradient
 
 
@@ -42,10 +44,11 @@ fun Confirmation() {
         .padding(vertical = 10.dp)
     val buttonBorder = BorderStroke(2.dp, ButtonGradient)
 
-    Surface {
+    Surface(
+        modifier = Modifier.fillMaxSize().background(BackgroundGray)
+    ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(horizontal = 20.dp, vertical = 20.dp)
         ) {
             Column(

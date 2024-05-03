@@ -14,6 +14,7 @@ val Pink40 = Color(0xFF7D5260)
 val FocusedTextFieldColor = Color(0xFFB9B9B9)
 val UnfocusedTextFieldColor = Color(0xFFB9B9B9)
 
+val BackgroundGray = Color(0xFF262626)
 val DarkBlack = Color(0xFF080808)
 val LightGray = Color(0xFF5E5E5E)
 val DarkGrayOutline = Color(0xFFB9B9B9)
