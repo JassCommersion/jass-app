@@ -17,4 +17,12 @@ interface HttpClientService {
 //    Profile
 
     suspend fun getUserProfile(accessToken: String): HttpResponse
+
+    suspend fun getAllProfiles(accessToken: String): HttpResponse
+
+    suspend fun getProfilesByIds(accessToken: String, ids: List<String>): HttpResponse
+
+    suspend fun getProfileById(accessToken: String, id: String): HttpResponse
+
+
 }

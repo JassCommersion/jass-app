@@ -72,10 +72,33 @@ class HttpClientServiceImpl(
         client.get("$BASE_URL_PROFILE/get/my_profile") {
             url {
                 bearerAuth(accessToken)
-                contentType(ContentType.Application.Json)
             }
         }
 
+    override suspend fun getAllProfiles(accessToken: String): HttpResponse =
+        client.get("$BASE_URL_PROFILE/get/all_profiles") {
+            url {
+                bearerAuth(accessToken)
+            }
+        }
+
+    override suspend fun getProfilesByIds(accessToken: String, ids: List<String>): HttpResponse =
+        client.get("$BASE_URL_PROFILE/get/profiles_by_ids"){
+            url {
+                bearerAuth(accessToken)
+                ids.forEach{
+                    parameters.append("ids", it)
+                }
+            }
+        }
+
+    override suspend fun getProfileById(accessToken: String, id: String): HttpResponse =
+        client.get("$BASE_URL_PROFILE/get/profile_by_id"){
+            url {
+                bearerAuth(accessToken)
+                parameters.append("id", id)
+            }
+        }
 
     companion object {
         private const val BASE_URL = "http://10.0.2.2:8080/api/v1"
