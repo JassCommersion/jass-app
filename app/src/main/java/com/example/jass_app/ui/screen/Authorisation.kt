@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,15 +28,18 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.jass_app.R
+import com.example.jass_app.data.viewmodel.LoginViewModel
+import com.example.jass_app.data.viewmodel.RegistrationViewModel
 import com.example.jass_app.ui.component.CustomButton
 import com.example.jass_app.ui.component.CustomOutlinedTextField
 import com.example.jass_app.ui.theme.ButtonGradient
+import org.koin.androidx.compose.getViewModel
 
 
-@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
 @Composable
-fun Authorisation() {
+fun Authorisation(navHostController: NavHostController, viewModel: LoginViewModel = getViewModel()) {
 
     var isCorrectEmail by remember { mutableStateOf(true) }
     var isCorrectPassword by remember { mutableStateOf(true) }
@@ -66,13 +70,18 @@ fun Authorisation() {
                 Spacer(modifier = Modifier.padding(5.dp))
 
                 AuthorisationTextFieldBlock(
-                    isCorrectEmail, isCorrectPassword
+                    isCorrectEmail, isCorrectPassword, viewModel
                 )
 
-                CustomButton(text = { Text(stringResource(id = R.string.continue_string)) },
+                CustomButton(
+                    text = { Text(stringResource(id = R.string.continue_string)) },
                     onClick = {
-                        isCorrectEmail = !isCorrectEmail
-                        isCorrectPassword = !isCorrectPassword
+                        if (viewModel.passwordValue.value != "" || viewModel.emailValue.value != "") {
+                            viewModel.login()
+                            if (viewModel.loginStatus.value!!) {
+                                navHostController.navigate("Profile", viewModel)
+                            }
+                        }
                     },
                     modifier = buttonModifier,
                     border = buttonBorder
@@ -85,10 +94,10 @@ fun Authorisation() {
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
-                        CustomButton(text = { Text(stringResource(id = R.string.sign_up)) },
+                        CustomButton(
+                            text = { Text(stringResource(id = R.string.sign_up)) },
                             onClick = {
-                                isCorrectEmail = !isCorrectEmail
-                                isCorrectPassword = !isCorrectPassword
+                                navHostController.navigate("Registration")
                             },
                             modifier = buttonModifier,
                             border = buttonBorder
@@ -98,7 +107,8 @@ fun Authorisation() {
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
-                        CustomButton(text = { Text(stringResource(id = R.string.sign_in)) },
+                        CustomButton(
+                            text = { Text(stringResource(id = R.string.sign_in)) },
                             onClick = {
                                 isCorrectEmail = !isCorrectEmail
                                 isCorrectPassword = !isCorrectPassword
@@ -130,7 +140,7 @@ fun Authorisation() {
                     Column(
                         modifier = Modifier.weight(0.45f)
                     ) {
-                        Divider()
+                        HorizontalDivider()
                     }
                     Column(
                         modifier = Modifier.weight(0.1f),
@@ -141,7 +151,7 @@ fun Authorisation() {
                     Column(
                         modifier = Modifier.weight(0.45f)
                     ) {
-                        Divider()
+                        HorizontalDivider()
                     }
                 }
                 CustomButton(
@@ -168,7 +178,7 @@ fun Authorisation() {
 
 @Composable
 fun AuthorisationTextFieldBlock(
-    isCorrectEmail: Boolean, isCorrectPassword: Boolean
+    isCorrectEmail: Boolean, isCorrectPassword: Boolean, viewModel: LoginViewModel
 ) {
 
     val textFieldModifier = Modifier
@@ -180,7 +190,10 @@ fun AuthorisationTextFieldBlock(
         keyboardType = KeyboardType.Email,
         supportingText = stringResource(R.string.incorrect_email_message),
         isError = !isCorrectEmail,
-        modifier = textFieldModifier
+        modifier = textFieldModifier,
+        onChange = { newValue ->
+            viewModel.emailValue.value = newValue
+        }
     )
     CustomOutlinedTextField(
         hintText = stringResource(id = R.string.password),
@@ -188,7 +201,10 @@ fun AuthorisationTextFieldBlock(
         isPasswordToggleEnabled = true,
         supportingText = stringResource(R.string.incorrect_password_message),
         isError = !isCorrectPassword,
-        modifier = textFieldModifier
+        modifier = textFieldModifier,
+        onChange = { newValue ->
+            viewModel.passwordValue.value = newValue
+        }
     )
 }
 

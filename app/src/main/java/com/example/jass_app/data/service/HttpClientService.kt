@@ -1,0 +1,18 @@
+package com.example.jass_app.data.service
+
+import com.example.jass_app.data.model.request.LoginRequest
+import com.example.jass_app.data.model.request.RegistrationRequest
+import io.ktor.client.statement.HttpResponse
+
+interface HttpClientService {
+
+//    Auth
+    suspend fun authTestConnection(): HttpResponse
+    suspend fun login(request: LoginRequest): HttpResponse
+    suspend fun register(request: RegistrationRequest): HttpResponse
+    suspend fun confirmRegister(email: String, token: String): HttpResponse
+
+//    Profile
+
+    suspend fun getUserProfile(accessToken: String): HttpResponse
+}

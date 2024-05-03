@@ -1,6 +1,8 @@
 package com.example.jass_app.ui.screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,11 +10,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -25,14 +28,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
@@ -43,105 +50,110 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jass_app.R
+import com.example.jass_app.ui.component.CustomButton
+import com.example.jass_app.data.model.Post
+import com.example.jass_app.data.viewmodel.ProfileViewModel
+import com.example.jass_app.ui.theme.ButtonGradient
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 
 
 @Composable
-
 fun UserProfile(
-    UserProfileData: Any
+    profileViewModel: ProfileViewModel
 ) {
-    Column {
-        ProfileHeader("really_long_long_long_long_long_username", 1)
-        Divider(modifier = Modifier.padding(vertical = 10.dp))
-    }
+    val buttonModifier = Modifier
+        .fillMaxWidth()
+    val buttonBorder = BorderStroke(2.dp, ButtonGradient)
 
-    CollapsingToolbarScaffold(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 15.dp, end = 15.dp, top = 50.dp),
+    CollapsingToolbarScaffold(modifier = Modifier
+        .fillMaxWidth()
+        .padding(start = 15.dp, end = 15.dp),
         state = rememberCollapsingToolbarScaffoldState(),
         scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed,
         toolbar = {
-            Box(modifier = Modifier.pin())
-            Column {
-                AvatarBlock(avatarId = 1, userFullName = "Vin Diesel")
-                Divider(modifier = Modifier.padding(top = 20.dp, bottom = 10.dp))
-                FriendsBlock(listOf("Andrew Tate", "Barack Obama"))
-                Divider(modifier = Modifier.padding(top = 5.dp, bottom = 10.dp))
+            Column(
+                modifier = Modifier.pin()
+            ) {
+                ProfileHeader("really_long_long_long_long_long_username", 1)
+                Divider(modifier = Modifier.padding(vertical = 10.dp, horizontal = 15.dp))
             }
         }) {
-
-        PhotoGrid(
-            listOf(
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
-                ImageBitmap.imageResource(R.drawable.test_avatar),
+        Column(
+            Modifier.fillMaxHeight()
+        ) {
+            Column(
+                Modifier.verticalScroll(rememberScrollState())
+            ) {
+            AvatarBlock(avatarId = 1, userFullName = "Vin Diesel")
+                Divider(modifier = Modifier.padding(top = 20.dp, bottom = 10.dp))
+                FriendsBlock(listOf("Andrew Tate", "Barack Obama", "Eshgin Magerramov", "Joe Biden", "Vladimir Putin"))
+                Divider(modifier = Modifier.padding(top = 5.dp, bottom = 10.dp))
+                CustomButton(
+                    text = { Text(stringResource(id = R.string.add_post)) },
+                    onClick = {
+                        posts.add(getNewPost())
+                }, modifier = buttonModifier, border = buttonBorder
+                )
+            }
+            PhotoGrid(
+                posts
             )
-        )
-
-
-    }
-
-}
-
-
-@Composable
-fun PhotoGrid(photos: List<ImageBitmap>) {
-    LazyVerticalGrid(columns = GridCells.Fixed(3)) {
-        items(photos) { photo ->
-            PhotoItem(photo = photo)
         }
     }
 }
 
+fun getNewPost(): Post {
+    return Post(userImage = R.drawable.test_avatar, post = R.drawable.test_avatar)
+}
+
 @Composable
-fun PhotoItem(photo: ImageBitmap, modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.padding(4.dp)
+fun PhotoGrid(photos: MutableList<Post> = mutableListOf<Post>()) {
+    val openDialog = remember { mutableStateOf(false) }
+    var post by remember { mutableStateOf(Post()) }
+    var whenDialogShow = 0L
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        verticalArrangement = Arrangement.Top,
     ) {
-        Image(
-            bitmap = photo,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1F)
-        )
+        items(photos) { item ->
+            Box(
+                modifier = Modifier.padding(4.dp)
+            ) {
+                Image(
+                    bitmap = ImageBitmap.imageResource(id = item.post),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1F)
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onLongPress = {
+                                    whenDialogShow = System.currentTimeMillis()
+                                    openDialog.value = true
+                                    post = item
+                                },
+                                onPress = {
+                                    awaitRelease()
+                                    if (System.currentTimeMillis() - whenDialogShow < 500) {
+                                        openDialog.value = false
+                                    }
+                                }
+                            )
+                        }
+                )
+            }
+        }
+    }
+    if (openDialog.value) {
+        PostDialog(
+            post = post,
+        ) {
+            openDialog.value = false
+        }
     }
 }
 
@@ -164,7 +176,9 @@ fun FriendsBlock(friendsList: List<String>) {
 fun FriendCard(name: String, photo: ImageBitmap) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier
+            .padding(8.dp)
+            .width(80.dp)
     ) {
         Image(
             bitmap = photo,
@@ -185,9 +199,9 @@ fun FriendCard(name: String, photo: ImageBitmap) {
 }
 
 @Composable
-@Preview(showBackground = true)
+@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
 fun UserProfilePreview() {
-    UserProfile(UserProfileData = Any())
+    UserProfile(MyProfileData = Any())
 }
 
 @Composable
@@ -265,16 +279,4 @@ fun ProfileHeader(userName: String, userId: Int) {
             )
         }
     }
-}
-
-@Composable
-//@Preview(showBackground = true)
-fun AvatarBlockPreview() {
-    AvatarBlock(1, "Vin Diesel")
-}
-
-@Composable
-//@Preview(showBackground = true)
-fun ProfileHeaderPreview() {
-    ProfileHeader(userName = "andrew_tate", userId = 1)
 }

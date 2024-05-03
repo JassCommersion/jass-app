@@ -5,6 +5,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -20,9 +21,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomOutlinedTextField(
     modifier: Modifier = Modifier,
+    text: String = "",
+    onChange: (String) -> Unit = {},
     hintText: String,
     hintModifier: Modifier = Modifier,
     isError: Boolean = false,
@@ -33,12 +37,13 @@ fun CustomOutlinedTextField(
     allowFreeFormInput: Boolean = false
 ) {
     var passwordVisibility by remember { mutableStateOf(false) }
-    var textValue by remember { mutableStateOf("") }
+    var textValue by remember { mutableStateOf(text) }
 
     OutlinedTextField(
         value = textValue,
         onValueChange = { newValue ->
             textValue = newValue
+            onChange(newValue)
         },
         placeholder = {
             Text(
@@ -73,6 +78,7 @@ fun CustomOutlinedTextField(
 @Preview
 fun CustomOutlinedTextFieldPreview() {
     CustomOutlinedTextField(
+        text = "test",
         hintText = "Password",
         keyboardType = KeyboardType.Password,
         isPasswordToggleEnabled = true,

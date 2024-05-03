@@ -17,4 +17,15 @@
     <string name="repeat_password_title_text">Enter new password</string>
     <string name="more_info">see more info</string>
     <string name="friends">Friends</string>
+    <string name="private_profile_message">This user’s profile is private</string>
+    <string name="add_post">NEW POST</string>
+    <string name="add_to_friend">ADD TO FRIEND</string>
+    <string name="settings">Settings</string>
+    <string name="language">Language</string>
+    <string name="visibility">Visibility</string>
+    <string name="theme">Theme</string>
+    <string name="edit_personal_info">Edit personal info</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="birt_date">Birth date</string>
 </resources>
