@@ -12,6 +12,8 @@ interface HttpClientService {
     suspend fun register(request: RegistrationRequest): HttpResponse
     suspend fun confirmRegister(email: String, token: String): HttpResponse
 
+    suspend fun refreshAuth(refreshToken: String): HttpResponse
+
 //    Profile
 
     suspend fun getUserProfile(accessToken: String): HttpResponse
