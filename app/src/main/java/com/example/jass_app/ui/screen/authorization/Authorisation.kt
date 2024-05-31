@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.jass_app.R
 import com.example.jass_app.data.viewmodel.LoginViewModel
+import com.example.jass_app.ui.Routes
 import com.example.jass_app.ui.component.CustomButton
 import com.example.jass_app.ui.component.CustomOutlinedTextField
 import com.example.jass_app.ui.theme.BackgroundGray
@@ -43,7 +44,7 @@ import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun Authorisation(
-    navHostController: NavHostController,
+    navigateTo : (route : String) -> Unit,
     viewModel: LoginViewModel = getViewModel()
 ) {
 
@@ -107,8 +108,7 @@ fun Authorisation(
                                     "refreshToken",
                                     viewModel.refreshToken.value!!
                                 )
-
-                                navHostController.navigate("Profile")
+                                navigateTo.invoke(Routes.Profile.name)
                             }
                         }
                     },
@@ -131,7 +131,7 @@ fun Authorisation(
                                 )
                             },
                             onClick = {
-                                navHostController.navigate("Registration")
+                                navigateTo.invoke(Routes.Registration.name)
                             },
                             modifier = buttonModifier,
                             border = buttonBorder

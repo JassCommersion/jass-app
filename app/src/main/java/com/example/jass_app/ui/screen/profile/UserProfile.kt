@@ -60,6 +60,7 @@ import com.example.jass_app.R
 import com.example.jass_app.ui.component.CustomButton
 import com.example.jass_app.data.model.Post
 import com.example.jass_app.data.viewmodel.ProfileViewModel
+import com.example.jass_app.ui.Routes
 import com.example.jass_app.ui.screen.PostDialog
 import com.example.jass_app.ui.theme.BackgroundGray
 import com.example.jass_app.ui.theme.ButtonGradient
@@ -71,7 +72,7 @@ import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 
 @Composable
 fun UserProfile(
-    navController: NavHostController,
+    navigateTo : (route : String) -> Unit,
     viewModel: ProfileViewModel
 ) {
     val buttonModifier = Modifier
