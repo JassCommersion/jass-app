@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.jass_app.R
 import com.example.jass_app.data.viewmodel.RegistrationViewModel
+import com.example.jass_app.ui.Routes
 import com.example.jass_app.ui.component.CustomButton
 import com.example.jass_app.ui.component.CustomOutlinedTextField
 import com.example.jass_app.ui.theme.ButtonGradient
@@ -40,7 +41,7 @@ import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun Registration(
-    navHostController: NavHostController,
+    navigateTo : (route : String) -> Unit,
     viewModel: RegistrationViewModel = getViewModel()
 ) {
 
@@ -128,7 +129,7 @@ fun Registration(
                         CustomButton(
                             text = { Text(stringResource(id = R.string.sign_in), color = Color.White) },
                             onClick = {
-                                navHostController.navigate("Authorization")
+                                navigateTo.invoke(Routes.Authorization.name)
                             }, modifier = buttonModifier, border = buttonBorder
                         )
                     }
